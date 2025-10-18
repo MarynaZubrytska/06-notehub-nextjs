@@ -1,23 +1,25 @@
-import { withDehydratedState } from "@/lib/prefetch";
-import { fetchNoteById } from "@/lib/api";
-import NoteDetailsClient from "./NoteDetails.client";
+import { withDehydratedState } from '@/lib/prefetch'
+import { fetchNoteById } from '@/lib/api'
+import NoteDetailsClient from './NoteDetails.client'
 
-interface Params {
-  params: { id: string };
-}
+type ParamsPromise = Promise<{ id: string }>
 
-export default async function NoteDetailsPage({ params }: Params) {
-  const { id } = params;
+export default async function NoteDetailsPage({
+  params,
+}: {
+  params: ParamsPromise
+}) {
+  const { id } = await params
 
   const element = await withDehydratedState(
     async (qc) => {
       await qc.prefetchQuery({
-        queryKey: ["note", id],
+        queryKey: ['note', id],
         queryFn: () => fetchNoteById(id),
-      });
+      })
     },
     <NoteDetailsClient />
-  );
+  )
 
-  return element;
+  return element
 }
